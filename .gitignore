@@ -68,6 +68,7 @@ dist/
 # Misc
 *.bak
 *.tmp
+message.txt
 
 # Sentry DSNs
 .sentryclirc
