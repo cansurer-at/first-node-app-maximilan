@@ -2,46 +2,40 @@
 const fs = require("fs");
 const path = require("path");
 
-const products = [];
+//p is global helper variable now
+const p = path.join(
+  path.dirname(require.main.filename),
+  "data",
+  "products.json"
+);
 
+//refactor with helper function
+const getProductsFromFile = (cb) => {
+  fs.readFile(p, (err, fileContent) => {
+    if (err) {
+      return cb([]);
+    }
+    //JSON.parse takes JSON and converts into object or array
+    else cb(JSON.parse(fileContent));
+  });
+};
 module.exports = class Product {
   constructor(t) {
     this.title = t;
   }
   save() {
-    const p = path.join(
-      path.dirname(require.main.filename),
-      "data",
-      "products.json"
-    );
-    fs.readFile(p, (err, fileContent) => {
-      let products = [];
-
-      if (!err) {
-        //JSON.parse takes JSON and converts into object or array
-
-        products = JSON.parse(fileContent);
-      }
+    getProductsFromFile((products) => {
       products.push(this);
       //JSON.stringify takes javascript object or array converts into JSON
       fs.writeFile(p, JSON.stringify(products), (err) => {
         console.log(err);
       });
     });
+    fs.readFile(p, (err, fileContent) => {});
   }
 
   static fetchAll(cb) {
-    const p = path.join(
-      path.dirname(require.main.filename),
-      "data",
-      "products.json"
-    );
-    fs.readFile(p, (err, fileContent) => {
-      if (err) {
-        cb([]);
-      }
-      cb(JSON.parse(fileContent));
-    });
+    getProductsFromFile(cb);
   }
 };
 
